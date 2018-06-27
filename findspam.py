@@ -1246,7 +1246,7 @@ class FindSpam:
          'reason': 'link at end of {}', 'title': False, 'body': True, 'username': False, 'stripcodeblocks': False,
          'body_summary': False, 'answers': False, 'max_rep': 1, 'max_score': 0},
         # Link at the end of a short answer
-        {'regex': r'(?is)^.{0,350}<a href="https?://(?:(?:www\.)?[\w-]+\.(?:blogspot\.|wordpress\.|co\.)?\w{2,4}'
+        {'regex': r'(?is)^.{0,350}<a href="https?://(?:(?:[\w-]+\.)+(?:blogspot\.|wordpress\.|co\.)?\w{2,4}'
                   r'/?\w{0,2}/?|(?:plus\.google|www\.facebook)\.com/[\w/]+)"[^<]*</a>(?:</strong>)?\W*</p>\s*$'
                   r'|\[/url\]\W*</p>\s*$',
          'all': True, 'sites': ["raspberrypi.stackexchange.com", "softwarerecs.stackexchange.com"],
