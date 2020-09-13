@@ -219,17 +219,17 @@ class Metasmoke:
                                           " ([history](//github.com/Charcoal-SE/SmokeDetector/wiki/_history)): ", 1)
                 from_ms = from_ms.replace("https:", "")
             chatcommunicate.tell_rooms_with("metasmoke", from_ms)
-        elif "autoflag_fp" in message:
-            event = message["autoflag_fp"]
-
-            chatcommunicate.tell_rooms(event["message"], ("debug", "site-" + event["site"]),
-                                       ("no-site-" + event["site"],), notify_site="/autoflag_fp")
         elif "exit" in message:
             os._exit(message["exit"])
         elif "everything_is_broken" in message:
             if message["everything_is_broken"] is True:
                 exit_mode("shutdown")
         '''
+        elif "autoflag_fp" in message:
+            event = message["autoflag_fp"]
+
+            chatcommunicate.tell_rooms(event["message"], ("debug", "site-" + event["site"]),
+                                       ("no-site-" + event["site"],), notify_site="/autoflag_fp")
         elif "blacklist" in message:
             ids = (message['blacklist']['uid'], message['blacklist']['site'])
 
