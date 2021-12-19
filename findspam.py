@@ -547,6 +547,13 @@ class FindSpam:
     rule_blacklisted_websites = None
     rule_blacklisted_usernames = None
 
+    ELAPSED_TIME_DRAW_ATTENTION_MIN = 5
+    ELAPSED_TIME_LOG_AND_TELL_LEVELS = [
+        ('info', '', 1),
+        ('warning', 'High ', 10),
+        ('error', '**Very High** ', 30),
+    ]
+
     @classmethod
     def reload_blacklists(cls):
         global bad_keywords_nwb
@@ -593,8 +600,27 @@ class FindSpam:
     def test_post(post):
         result = []
         why_title, why_username, why_body = [], [], []
+        post_brief_id = "{}/{}/{}".format(post.post_site, "a" if post.is_answer else "q", post.post_id)
         for rule in FindSpam.rules:
+            start_time = time.time()
             title, username, body = rule.match(post)
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            draw_attention = ' <------------------' if elapsed_time > FindSpam.ELAPSED_TIME_DRAW_ATTENTION_MIN else ''
+            log_type = ''
+            tell_text = ''
+            for log_level, tell_level, minimum_elapsed_time in FindSpam.ELAPSED_TIME_LOG_AND_TELL_LEVELS:
+                if (elapsed_time >= minimum_elapsed_time):
+                    log_type = log_level
+                    tell_text = tell_level
+            if (log_type):
+                log_message = 'Rule elapsed time: ' + \
+                              '{}: {}: [{}]({}): elapsed time: {:.6f} seconds'.format(rule.reason, rule.rule_id,
+                                                                                      post_brief_id, post.post_url,
+                                                                                      elapsed_time)
+                log(log_type, log_message + draw_attention)
+                if tell_text:
+                    chatcommunicate.tell_rooms_with('debug', tell_text + log_message)
             if title[0]:
                 result.append(title[1])
                 why_title.append(title[2])
