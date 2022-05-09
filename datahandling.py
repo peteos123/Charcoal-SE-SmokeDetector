@@ -16,7 +16,7 @@ import regex
 from parsing import api_parameter_from_link, post_id_from_link
 from globalvars import GlobalVars
 import blacklists
-from helpers import ErrorLogs, log, log_exception, redact_passwords
+from helpers import ErrorLogs, log, log_exception, redact_passwords, get_recently_scanned_key_for_post
 import threading
 from tasks import Tasks
 
@@ -458,9 +458,7 @@ def append_to_latest_questions(host, post_id, title):
 
 
 def add_recently_scanned_post(post):
-    site = post['site']
-    post_id = post['id']
-    new_key = "{}/{}".format(site, post_id)
+    new_key = get_recently_scanned_key_for_post(post)
     new_record = {'post': post, 'scan_timestamp': time.time()}
     with GlobalVars.recently_scanned_posts_lock:
         GlobalVars.recently_scanned_posts[new_key] = new_record
