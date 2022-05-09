@@ -71,6 +71,8 @@ class EditWatcher:
                             del self.posts[action]
                             Tasks.do(self._unsubscribe, action)
                     if max_time > now and data["a"] == "post-edit":
+                        print('POST-EDIT: Scheduling bodyfetcher for: hostname:', hostname,
+                              ':: question_id:', question_id)
                         add_to_global_bodyfetcher_queue_in_new_thread(hostname, question_id, False)
 
     def subscribe(self, post_url=None, hostname=None, site_id=None, question_id=None,
@@ -128,6 +130,7 @@ class EditWatcher:
                         updated = False
 
         for action in to_subscribe:
+            print('scheduling subscription to action:', action)
             Tasks.do(self._subscribe, action)
 
         if updated and pickle:
@@ -135,6 +138,7 @@ class EditWatcher:
 
     def _subscribe(self, action):
         if self.socket:
+            print('subscribing to action:', action)
             try:
                 self.socket.send(action)
             except websocket.WebSocketException:
@@ -156,6 +160,7 @@ class EditWatcher:
 
     def _unsubscribe(self, action):
         if self.socket:
+            print('UNsubscribing to action:', action)
             try:
                 self.socket.send("-" + action)
             except websocket.WebSocketException:
