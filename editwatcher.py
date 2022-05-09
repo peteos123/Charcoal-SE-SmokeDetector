@@ -119,7 +119,7 @@ class EditWatcher:
                 action = "{}-question-{}".format(site_id, question_id)
                 if action not in self.posts:
                     self.posts[action] = (site_id, hostname, question_id, max_time)
-                    to_subscribe.append[action]
+                    to_subscribe.append(action)
                 else:
                     old_max_time = self.posts[action][2]
                     if max_time > old_max_time:
