@@ -218,8 +218,6 @@ class Metasmoke:
             return
 
         if "message" in message:
-            # Temporarily allow this to be handled by the MS relay instance
-            return
             from_ms = message['message']
             if (from_ms.startswith("[ [charcoal-se.github.io](https://github.com/Charcoal-SE/charcoal-se.github.io) ]"
                                    " continuous-integration/travis-ci/push")):
@@ -228,14 +226,20 @@ class Metasmoke:
                                           " ([history](//github.com/Charcoal-SE/SmokeDetector/wiki/_history)): ", 1)
             # Use protocol-relative links
             from_ms = sub(r"\]\((?<!\\\]\()https?://", "](//", from_ms)
+            if "New [metasmoke user](//metasmoke.erwaysoftware.com/users" in from_ms and "](//stackexchange.com/users" in from_ms:
+                from_ms += " @Makyen"
             chatcommunicate.tell_rooms_with("metasmoke", from_ms)
+        elif "exit" in message:
+            exit_mode(code=message["exit"])
+        elif "everything_is_broken" in message:
+            if message["everything_is_broken"] is True:
+                exit_mode("shutdown")
+        '''
         elif "autoflag_fp" in message:
             event = message["autoflag_fp"]
 
             chatcommunicate.tell_rooms(event["message"], ("debug", "site-" + event["site"]),
                                        ("no-site-" + event["site"],), notify_site="/autoflag_fp")
-        elif "exit" in message:
-            exit_mode(code=message["exit"])
         elif "blacklist" in message:
             ids = (message['blacklist']['uid'], message['blacklist']['site'])
 
@@ -316,12 +320,10 @@ class Metasmoke:
                     "failed.".format(ci_link=c["ci_url"], repo=GlobalVars.bot_repo_slug, commit_sha=sha)
 
                 chatcommunicate.tell_rooms_with("debug", s, notify_site="/ci")
-        elif "everything_is_broken" in message:
-            if message["everything_is_broken"] is True:
-                exit_mode("shutdown")
         elif "domain_whitelist" in message:
             if message["domain_whitelist"] == "refresh":
                 metasmoke_cache.MetasmokeCache.delete('whitelisted-domains')
+        '''
 
     @staticmethod
     def add_call_to_metasmoke_queue(method_name, ms_ajax_timestamp, data):
@@ -451,6 +453,8 @@ class Metasmoke:
 
     @staticmethod
     def send_status_ping():
+        # This is going to just sit watching the MS WebSocket, so there's no need to send pings.
+        return
         if GlobalVars.metasmoke_host is None:
             log('info', 'Attempted to send status ping but metasmoke_host is undefined. Not sent.')
             return
@@ -710,6 +714,9 @@ class Metasmoke:
 
     @staticmethod
     def send_status_ping_and_verify_scanning_if_active():
+        # This is going to just sit watching the MS WebSocket, so there's no need to send pings.
+        return
+
         def reboot_or_standby(action):
             error_message = "There's been no scan activity for {} status pings. Going to {}." \
                             .format(Metasmoke.status_pings_since_scan_activity, action)
